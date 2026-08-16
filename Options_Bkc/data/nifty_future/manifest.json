@@ -1,0 +1,132 @@
+{
+  "downloaded_at": "2026-08-09T20:33:55.383505+05:30",
+  "underlying": "NIFTY",
+  "requested_calendar_days": 15,
+  "from_date": "2026-07-24",
+  "through_date": "2026-08-07",
+  "historical_interval": "ONE_MINUTE",
+  "execution_interval": "FIVE_SECONDS_FROM_REPLAY_TAPES",
+  "sessions": [
+    {
+      "session_date": "2026-07-24",
+      "status": "READY",
+      "reason": null,
+      "contract": "NIFTY25AUG26FUT",
+      "token": "58072",
+      "expiry": "2026-08-25",
+      "interval": "ONE_MINUTE",
+      "rows": 375,
+      "file": "E:\\Option_Trade\\Options\\data\\nifty_future\\20260724_NIFTY25AUG26FUT_ONE_MINUTE.csv"
+    },
+    {
+      "session_date": "2026-07-27",
+      "status": "READY",
+      "reason": null,
+      "contract": "NIFTY25AUG26FUT",
+      "token": "58072",
+      "expiry": "2026-08-25",
+      "interval": "ONE_MINUTE",
+      "rows": 375,
+      "file": "E:\\Option_Trade\\Options\\data\\nifty_future\\20260727_NIFTY25AUG26FUT_ONE_MINUTE.csv"
+    },
+    {
+      "session_date": "2026-07-28",
+      "status": "READY",
+      "reason": null,
+      "contract": "NIFTY25AUG26FUT",
+      "token": "58072",
+      "expiry": "2026-08-25",
+      "interval": "ONE_MINUTE",
+      "rows": 375,
+      "file": "E:\\Option_Trade\\Options\\data\\nifty_future\\20260728_NIFTY25AUG26FUT_ONE_MINUTE.csv"
+    },
+    {
+      "session_date": "2026-07-29",
+      "status": "READY",
+      "reason": null,
+      "contract": "NIFTY25AUG26FUT",
+      "token": "58072",
+      "expiry": "2026-08-25",
+      "interval": "ONE_MINUTE",
+      "rows": 375,
+      "file": "E:\\Option_Trade\\Options\\data\\nifty_future\\20260729_NIFTY25AUG26FUT_ONE_MINUTE.csv"
+    },
+    {
+      "session_date": "2026-07-30",
+      "status": "READY",
+      "reason": null,
+      "contract": "NIFTY25AUG26FUT",
+      "token": "58072",
+      "expiry": "2026-08-25",
+      "interval": "ONE_MINUTE",
+      "rows": 375,
+      "file": "E:\\Option_Trade\\Options\\data\\nifty_future\\20260730_NIFTY25AUG26FUT_ONE_MINUTE.csv"
+    },
+    {
+      "session_date": "2026-07-31",
+      "status": "READY",
+      "reason": null,
+      "contract": "NIFTY25AUG26FUT",
+      "token": "58072",
+      "expiry": "2026-08-25",
+      "interval": "ONE_MINUTE",
+      "rows": 375,
+      "file": "E:\\Option_Trade\\Options\\data\\nifty_future\\20260731_NIFTY25AUG26FUT_ONE_MINUTE.csv"
+    },
+    {
+      "session_date": "2026-08-03",
+      "status": "READY",
+      "reason": null,
+      "contract": "NIFTY25AUG26FUT",
+      "token": "58072",
+      "expiry": "2026-08-25",
+      "interval": "ONE_MINUTE",
+      "rows": 375,
+      "file": "E:\\Option_Trade\\Options\\data\\nifty_future\\20260803_NIFTY25AUG26FUT_ONE_MINUTE.csv"
+    },
+    {
+      "session_date": "2026-08-04",
+      "status": "READY",
+      "reason": null,
+      "contract": "NIFTY25AUG26FUT",
+      "token": "58072",
+      "expiry": "2026-08-25",
+      "interval": "ONE_MINUTE",
+      "rows": 375,
+      "file": "E:\\Option_Trade\\Options\\data\\nifty_future\\20260804_NIFTY25AUG26FUT_ONE_MINUTE.csv"
+    },
+    {
+      "session_date": "2026-08-05",
+      "status": "READY",
+      "reason": null,
+      "contract": "NIFTY25AUG26FUT",
+      "token": "58072",
+      "expiry": "2026-08-25",
+      "interval": "ONE_MINUTE",
+      "rows": 375,
+      "file": "E:\\Option_Trade\\Options\\data\\nifty_future\\20260805_NIFTY25AUG26FUT_ONE_MINUTE.csv"
+    },
+    {
+      "session_date": "2026-08-06",
+      "status": "READY",
+      "reason": null,
+      "contract": "NIFTY25AUG26FUT",
+      "token": "58072",
+      "expiry": "2026-08-25",
+      "interval": "ONE_MINUTE",
+      "rows": 375,
+      "file": "E:\\Option_Trade\\Options\\data\\nifty_future\\20260806_NIFTY25AUG26FUT_ONE_MINUTE.csv"
+    },
+    {
+      "session_date": "2026-08-07",
+      "status": "READY",
+      "reason": null,
+      "contract": "NIFTY25AUG26FUT",
+      "token": "58072",
+      "expiry": "2026-08-25",
+      "interval": "ONE_MINUTE",
+      "rows": 375,
+      "file": "E:\\Option_Trade\\Options\\data\\nifty_future\\20260807_NIFTY25AUG26FUT_ONE_MINUTE.csv"
+    }
+  ]
+}

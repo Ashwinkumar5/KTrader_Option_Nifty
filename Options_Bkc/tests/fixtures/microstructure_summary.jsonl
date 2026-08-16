@@ -1,0 +1,4 @@
+{"record_type":"market_event","features":{"has_complete_book":true},"microstructure_signal":{"side":"BUY_CALL"}}
+{"record_type":"market_event","features":{"has_complete_book":false},"microstructure_signal":null}
+{"record_type":"gate_decision","decision":{"qualified":true}}
+{"record_type":"gate_decision","decision":{"qualified":false}}

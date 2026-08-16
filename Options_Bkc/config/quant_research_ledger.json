@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "champion_profile": "derivatives_only",
+  "promotion_policy": {
+    "minimum_unique_trading_days_for_ranking": 10,
+    "minimum_completed_trades_for_ranking": 30,
+    "minimum_unique_trading_days_for_production_review": 20,
+    "preferred_completed_trades_for_production_review": 60,
+    "require_positive_cost_adjusted_expectancy": true,
+    "automatic_production_promotion": false
+  },
+  "experiments": [
+    {
+      "experiment_id": "balanced_early_qualification_v1",
+      "profile": "derivatives_quant_balanced_research",
+      "hypothesis": "Relaxing horizon agreement, independent-family count and buyability may reduce entry delay.",
+      "changes": {
+        "early_min_horizon_agreement": {"from": 3, "to": 2},
+        "early_min_independent_families": {"from": 4, "to": 3},
+        "early_min_buyability_score": {"from": 0.65, "to": 0.60}
+      },
+      "status": "NOT_IMPROVED",
+      "approved_for_live_use": false,
+      "discovery_results": [
+        {
+          "trading_date": "2026-07-31",
+          "source_sha256": "a11c09030e44d387b2c73751931ca62d9f276f0f906fa73297bf6d3d6becf3e5",
+          "signals": 4,
+          "targets": 0,
+          "stops": 3,
+          "time_exits": 1,
+          "gross_completed_trade_return_percent": -14.9632,
+          "baseline_gross_completed_trade_return_percent": -15.1443,
+          "verdict": "Earlier fourth entry still hit stop; no material improvement."
+        }
+      ]
+    },
+    {
+      "experiment_id": "horizon_only_v1",
+      "profile": "derivatives_quant_horizon_research",
+      "hypothesis": "Two aligned horizons may identify direction before the slowest horizon confirms.",
+      "changes": {
+        "early_min_horizon_agreement": {"from": 3, "to": 2}
+      },
+      "status": "LOCKED_FOR_VALIDATION",
+      "approved_for_live_use": false,
+      "discovery_results": []
+    },
+    {
+      "experiment_id": "family_only_v1",
+      "profile": "derivatives_quant_family_research",
+      "hypothesis": "Three independent aligned families may reduce entry delay without changing other gates.",
+      "changes": {
+        "early_min_independent_families": {"from": 4, "to": 3}
+      },
+      "status": "LOCKED_FOR_VALIDATION",
+      "approved_for_live_use": false,
+      "discovery_results": []
+    },
+    {
+      "experiment_id": "buyability_only_v1",
+      "profile": "derivatives_quant_buyability_research",
+      "hypothesis": "A 0.60 early buyability floor may reduce delay while retaining option-buying quality.",
+      "changes": {
+        "early_min_buyability_score": {"from": 0.65, "to": 0.60}
+      },
+      "status": "LOCKED_FOR_VALIDATION",
+      "approved_for_live_use": false,
+      "discovery_results": []
+    },
+    {
+      "experiment_id": "acceleration_only_v1",
+      "profile": null,
+      "hypothesis": "Logging acceleration without requiring it may admit persistent but no-longer-accelerating direction earlier.",
+      "changes": {
+        "require_early_acceleration": {"from": true, "to": false}
+      },
+      "status": "PLANNED_NOT_IMPLEMENTED",
+      "approved_for_live_use": false,
+      "discovery_results": []
+    }
+  ]
+}

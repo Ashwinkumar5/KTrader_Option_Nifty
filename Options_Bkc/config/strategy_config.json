@@ -1,0 +1,492 @@
+{
+  "version": 1,
+  "active_profile": "derivatives_only",
+  "profiles": {
+    "derivatives_only": {
+      "watchdog_enable": "Y",
+      "description": "Single causal NIFTY derivatives-flow decision machine.",
+      "strategies": {
+        "DERIVATIVES_QUANT": {
+          "enabled": true,
+          "priority": 10,
+          "publish_to_simulator": true
+        },
+        "LEVEL_REVERSAL": {
+          "enabled": false,
+          "priority": 20,
+          "publish_to_simulator": true
+        },
+        "BREAKOUT_MOMENTUM": {
+          "enabled": false,
+          "priority": 30,
+          "publish_to_simulator": true
+        },
+        "GAMMA_EXPANSION": {
+          "enabled": true,
+          "priority": 40,
+          "publish_to_simulator": true
+        }
+      },
+      "features": {
+        "premium_response": true,
+        "futures_flow": true,
+        "consolidated_pcr": true,
+        "strike_pcr": true,
+        "volume_oi": true,
+        "iv_surface": true,
+        "iv_skew": true,
+        "atr_normalization": true,
+        "india_vix_regime": true,
+        "gamma_concentration": true,
+        "straddle_expansion": true,
+        "futures_basis": true,
+        "order_book_imbalance": true
+      },
+      "quant": {
+        "direction_window_seconds": 60,
+        "direction_horizons_seconds": [15, 60, 180],
+        "normalization_window_seconds": 900,
+        "compression_window_seconds": 180,
+        "forecast_horizon_seconds": 180,
+        "minimum_direction_score": 0.34,
+        "direction_activation_quantile": 0.85,
+        "direction_activation_min_observations": 20,
+        "warmup_direction_score": 0.34,
+        "early_direction_score": 0.22,
+        "early_min_horizon_agreement": 3,
+        "early_min_independent_families": 4,
+        "early_min_option_chain_families": 2,
+        "early_min_buyability_score": 0.65,
+        "early_max_leg_chase_percent": 4.0,
+        "early_score_persistence_frames": 2,
+        "minimum_buyability_score": 0.50,
+        "minimum_independent_families": 3,
+        "minimum_horizon_agreement": 2,
+        "zscore_clip": 3.0,
+        "minimum_expected_option_return_percent": 3.0,
+        "minimum_straddle_expansion_percent": 0.35,
+        "minimum_iv_expansion_percent": 0.25,
+        "minimum_leg_impulse_zscore": 1.0,
+        "maximum_iv_rank": 85.0,
+        "maximum_leg_chase_percent": 8.0,
+        "maximum_compression_range_points": 25.0,
+        "minimum_compression_observations": 5,
+        "require_compression": false,
+        "require_expansion_trigger": true,
+        "require_futures_flow": false,
+        "weights": {
+          "futures_flow": 0.22,
+          "index_momentum": 0.16,
+          "option_premium_momentum": 0.20,
+          "option_volume_flow": 0.14,
+          "iv_skew": 0.10,
+          "oi_migration": 0.05,
+          "pcr_context": 0.05,
+          "futures_basis": 0.04
+        }
+      },
+      "microstructure": {
+        "feature_window_seconds": 3,
+        "feature_min_events": 3,
+        "minimum_book_imbalance": 0.25,
+        "minimum_price_velocity": 0.50,
+        "minimum_option_velocity_percent_per_second": 0.15,
+        "maximum_spread_points": 1.50,
+        "require_target_option_confirmation": true,
+        "require_futures_confirmation": false,
+        "minimum_futures_confirmations": 2,
+        "minimum_option_confirmations": 2,
+        "maximum_age_seconds": 5,
+        "minimum_confidence": 0.35
+      },
+      "execution": {
+        "stop_percent": 5.0,
+        "target_percent": 10.0,
+        "maximum_hold_minutes": 15,
+        "cooldown_seconds": 900
+      }
+    },
+    "intraday_directional_premium_momentum_research": {
+      "extends": "derivatives_only",
+      "watchdog_enable": "Y",
+      "description": "Research-only long-option momentum branch: underlying direction, long-premium value, liquid contract, timely option-book entry and fixed risk.",
+      "strategies": {
+        "DERIVATIVES_QUANT": {
+          "enabled": true,
+          "priority": 10,
+          "publish_to_simulator": true
+        },
+        "GAMMA_EXPANSION": {
+          "enabled": false,
+          "priority": 40,
+          "publish_to_simulator": true
+        }
+      },
+      "features": {
+        "expected_move": true,
+        "premium_response": true,
+        "futures_flow": true,
+        "iv_surface": true,
+        "atr_normalization": true,
+        "straddle_expansion": true,
+        "order_book_imbalance": true
+      },
+      "quant": {
+        "minimum_direction_score": 0.24,
+        "warmup_direction_score": 0.24,
+        "early_direction_score": 0.16,
+        "minimum_horizon_agreement": 2,
+        "early_min_horizon_agreement": 2,
+        "minimum_independent_families": 1,
+        "early_min_independent_families": 1,
+        "early_min_option_chain_families": 0,
+        "minimum_buyability_score": 0.45,
+        "early_min_buyability_score": 0.50,
+        "minimum_expected_option_return_percent": 2.0,
+        "maximum_leg_chase_percent": 4.0,
+        "early_max_leg_chase_percent": 3.0,
+        "require_early_acceleration": false,
+        "require_expansion_trigger": false,
+        "weights": {
+          "futures_flow": 0.35,
+          "index_momentum": 0.65
+        }
+      },
+      "microstructure": {
+        "require_target_option_confirmation": true,
+        "minimum_option_confirmations": 1,
+        "maximum_age_seconds": 2,
+        "gate_minimum_directional_confirmations": 1,
+        "gate_minimum_independent_families": 1,
+        "event_driven_entry": true,
+        "candidate_ttl_seconds": 10,
+        "maximum_candidate_premium_chase_percent": 2.0,
+        "event_entry_cutoff_time": "15:10:00"
+      },
+      "execution": {
+        "stop_percent": 5.0,
+        "target_percent": 10.0,
+        "maximum_hold_minutes": 15,
+        "cooldown_seconds": 900
+      }
+    },
+    "intraday_from_legends": {
+      "extends": "derivatives_only",
+      "watchdog_enable": "Y",
+      "description": "Research-only directional option-buying profile: patient multi-horizon direction, derivative-context confirmation, event-driven entry and trend-following exits.",
+      "strategies": {
+        "DERIVATIVES_QUANT": {
+          "enabled": true,
+          "priority": 10,
+          "publish_to_simulator": true
+        },
+        "GAMMA_EXPANSION": {
+          "enabled": false,
+          "priority": 40,
+          "publish_to_simulator": true
+        }
+      },
+      "features": {
+        "expected_move": true,
+        "momentum_exhaustion": true,
+        "premium_response": true,
+        "futures_flow": true,
+        "consolidated_pcr": true,
+        "strike_pcr": true,
+        "volume_oi": true,
+        "iv_surface": true,
+        "iv_skew": true,
+        "atr_normalization": true,
+        "india_vix_regime": true,
+        "straddle_expansion": true,
+        "futures_basis": true,
+        "order_book_imbalance": true
+      },
+      "quant": {
+        "minimum_direction_score": 0.28,
+        "warmup_direction_score": 0.28,
+        "early_direction_score": 0.18,
+        "minimum_horizon_agreement": 2,
+        "early_min_horizon_agreement": 2,
+        "minimum_independent_families": 2,
+        "early_min_independent_families": 2,
+        "early_min_option_chain_families": 1,
+        "minimum_buyability_score": 0.52,
+        "early_min_buyability_score": 0.55,
+        "minimum_expected_option_return_percent": 2.5,
+        "maximum_leg_chase_percent": 4.0,
+        "early_max_leg_chase_percent": 3.0,
+        "require_early_acceleration": false,
+        "require_expansion_trigger": false,
+        "require_futures_flow": false,
+        "weights": {
+          "index_momentum": 0.30,
+          "futures_flow": 0.25,
+          "option_premium_momentum": 0.20,
+          "option_volume_flow": 0.08,
+          "oi_migration": 0.07,
+          "pcr_context": 0.05,
+          "iv_skew": 0.03,
+          "futures_basis": 0.02
+        }
+      },
+      "microstructure": {
+        "feature_window_seconds": 3,
+        "feature_min_events": 2,
+        "minimum_book_imbalance": 0.20,
+        "minimum_price_velocity": 0.35,
+        "minimum_option_velocity_percent_per_second": 0.10,
+        "maximum_spread_points": 1.50,
+        "require_target_option_confirmation": true,
+        "require_futures_confirmation": false,
+        "minimum_option_confirmations": 1,
+        "maximum_age_seconds": 2,
+        "minimum_confidence": 0.35,
+        "gate_minimum_directional_confirmations": 1,
+        "gate_minimum_independent_families": 1,
+        "event_driven_entry": true,
+        "candidate_ttl_seconds": 10,
+        "maximum_candidate_premium_chase_percent": 2.0,
+        "event_entry_cutoff_time": "15:10:00"
+      },
+      "execution": {
+        "stop_percent": 5.0,
+        "target_percent": 50.0,
+        "maximum_hold_minutes": 180,
+        "cooldown_seconds": 900,
+        "trailing_activation_percent": 5.0,
+        "trailing_drawdown_percent": 3.0,
+        "no_follow_through_seconds": 120,
+        "minimum_follow_through_percent": 1.0,
+        "event_driven_exit": true,
+        "close_at_tape_end": true
+      }
+    },
+    "cross_strike_premium_impulse_research": {
+      "watchdog_enable": "Y",
+      "description": "Research-only cross-strike option-premium impulse: same-side CE/PE breadth, opposite-leg decay, exact-contract book confirmation and fast failed-follow-through exit.",
+      "strategies": {
+        "OPTION_CHAIN_IMPULSE": {
+          "enabled": true,
+          "priority": 10,
+          "publish_to_simulator": true
+        }
+      },
+      "features": {
+        "premium_response": true,
+        "futures_flow": true,
+        "volume_oi": true,
+        "order_book_imbalance": true
+      },
+      "impulse": {
+        "window_seconds": 30,
+        "strike_depth": 2,
+        "minimum_legs_per_side": 3,
+        "minimum_basket_return_percent": 0.80,
+        "maximum_opposite_return_percent": -0.30,
+        "minimum_return_gap_percent": 1.20,
+        "maximum_return_gap_percent": 3.00,
+        "minimum_same_side_breadth": 0.60,
+        "minimum_opposite_decay_breadth": 0.60,
+        "same_side_leg_return_percent": 0.30,
+        "opposite_leg_decay_percent": -0.20,
+        "minimum_residual_return_percent": 0.10,
+        "minimum_residual_breadth": 0.60,
+        "minimum_volume_ratio": 0.75,
+        "maximum_basket_chase_percent": 2.50,
+        "maximum_average_spread_ratio": 0.025
+      },
+      "microstructure": {
+        "feature_window_seconds": 3,
+        "feature_min_events": 2,
+        "minimum_book_imbalance": 0.18,
+        "minimum_price_velocity": 0.25,
+        "minimum_option_velocity_percent_per_second": 0.08,
+        "maximum_spread_points": 1.50,
+        "require_target_option_confirmation": true,
+        "require_futures_confirmation": false,
+        "minimum_futures_confirmations": 0,
+        "minimum_option_confirmations": 1,
+        "maximum_age_seconds": 2,
+        "minimum_confidence": 0.30,
+        "gate_minimum_directional_confirmations": 1,
+        "gate_minimum_independent_families": 2,
+        "event_driven_entry": true,
+        "candidate_ttl_seconds": 3,
+        "maximum_candidate_premium_chase_percent": 1.0,
+        "event_entry_cutoff_time": "13:30:00"
+      },
+      "execution": {
+        "stop_percent": 2.5,
+        "target_percent": 30.0,
+        "maximum_hold_minutes": 30,
+        "cooldown_seconds": 600,
+        "trailing_activation_percent": 2.0,
+        "trailing_drawdown_percent": 1.25,
+        "no_follow_through_seconds": 120,
+        "minimum_follow_through_percent": 0.50,
+        "event_driven_exit": true,
+        "close_at_tape_end": true
+      }
+    },
+    "cross_strike_confirmed_impulse_research": {
+      "watchdog_enable": "Y",
+      "description": "Research-only confirmed cross-strike option-premium impulse with window-aligned residual pressure, strict target-option book pressure and non-weakening event entry.",
+      "strategies": {
+        "OPTION_CHAIN_IMPULSE": {
+          "enabled": true,
+          "priority": 10,
+          "publish_to_simulator": true
+        }
+      },
+      "features": {
+        "premium_response": true,
+        "futures_flow": true,
+        "volume_oi": true,
+        "order_book_imbalance": true
+      },
+      "impulse": {
+        "window_seconds": 30,
+        "strike_depth": 2,
+        "minimum_legs_per_side": 3,
+        "minimum_basket_return_percent": 0.80,
+        "maximum_opposite_return_percent": -0.30,
+        "minimum_return_gap_percent": 1.20,
+        "maximum_return_gap_percent": 3.00,
+        "minimum_same_side_breadth": 0.60,
+        "minimum_opposite_decay_breadth": 0.60,
+        "same_side_leg_return_percent": 0.30,
+        "opposite_leg_decay_percent": -0.20,
+        "minimum_residual_return_percent": 0.10,
+        "minimum_residual_breadth": 0.60,
+        "minimum_volume_ratio": 0.75,
+        "maximum_basket_chase_percent": 2.50,
+        "maximum_average_spread_ratio": 0.025,
+        "aggregate_residual_over_window": true
+      },
+      "microstructure": {
+        "feature_window_seconds": 3,
+        "feature_min_events": 2,
+        "minimum_book_imbalance": 0.25,
+        "minimum_price_velocity": 0.25,
+        "minimum_option_velocity_percent_per_second": 0.08,
+        "maximum_spread_points": 1.50,
+        "require_target_option_confirmation": true,
+        "require_futures_confirmation": false,
+        "minimum_futures_confirmations": 0,
+        "minimum_option_confirmations": 1,
+        "maximum_age_seconds": 2,
+        "minimum_confidence": 0.30,
+        "gate_minimum_directional_confirmations": 1,
+        "gate_minimum_independent_families": 2,
+        "event_driven_entry": true,
+        "candidate_ttl_seconds": 3,
+        "minimum_candidate_premium_chase_percent": 0.0,
+        "maximum_candidate_premium_chase_percent": 1.0,
+        "require_directional_option_book": true,
+        "event_entry_cutoff_time": "13:30:00"
+      },
+      "execution": {
+        "stop_percent": 2.5,
+        "target_percent": 30.0,
+        "maximum_hold_minutes": 30,
+        "cooldown_seconds": 600,
+        "trailing_activation_percent": 2.0,
+        "trailing_drawdown_percent": 1.25,
+        "no_follow_through_seconds": 120,
+        "minimum_follow_through_percent": 0.50,
+        "event_driven_exit": true,
+        "close_at_tape_end": true
+      }
+    },
+    "Liquidity_Sweep_Reclaim": {
+      "watchdog_enable": "Y",
+      "description": "SMC research profile: causal NIFTY-futures liquidity sweep, fast reclaim, non-repainting micro-structure shift, normalized displacement, cross-strike premium impulse and exact CE/PE plus futures OFI confirmation.",
+      "strategies": {
+        "SMC": {
+          "enabled": true,
+          "priority": 10,
+          "publish_to_simulator": true
+        }
+      },
+      "features": {
+        "premium_response": true,
+        "futures_flow": true,
+        "volume_oi": true,
+        "order_book_imbalance": true
+      },
+      "smc": {
+        "opening_range_minutes": 15,
+        "swing_left_frames": 3,
+        "swing_right_frames": 3,
+        "structure_lookback_frames": 12,
+        "displacement_lookback_frames": 60,
+        "maximum_active_levels_per_side": 8,
+        "maximum_level_age_minutes": 180,
+        "minimum_sweep_points": 2.0,
+        "reclaim_buffer_points": 0.5,
+        "structure_break_buffer_points": 0.5,
+        "minimum_displacement_points": 4.0,
+        "displacement_multiplier": 1.5,
+        "maximum_reclaim_seconds": 30,
+        "maximum_structure_break_seconds": 60,
+        "option_confirmation_ttl_seconds": 30,
+        "event_cooldown_seconds": 120,
+        "require_cross_strike_confirmation": true
+      },
+      "impulse": {
+        "window_seconds": 30,
+        "strike_depth": 2,
+        "minimum_legs_per_side": 3,
+        "minimum_basket_return_percent": 0.60,
+        "maximum_opposite_return_percent": -0.20,
+        "minimum_return_gap_percent": 0.90,
+        "maximum_return_gap_percent": 4.00,
+        "minimum_same_side_breadth": 0.60,
+        "minimum_opposite_decay_breadth": 0.60,
+        "same_side_leg_return_percent": 0.20,
+        "opposite_leg_decay_percent": -0.10,
+        "minimum_residual_return_percent": 0.05,
+        "minimum_residual_breadth": 0.60,
+        "minimum_volume_ratio": 0.75,
+        "maximum_basket_chase_percent": 3.00,
+        "maximum_average_spread_ratio": 0.025,
+        "aggregate_residual_over_window": true
+      },
+      "microstructure": {
+        "feature_window_seconds": 3,
+        "feature_min_events": 2,
+        "minimum_book_imbalance": 0.20,
+        "minimum_price_velocity": 0.25,
+        "minimum_option_velocity_percent_per_second": 0.08,
+        "maximum_spread_points": 1.50,
+        "require_target_option_confirmation": true,
+        "require_futures_confirmation": true,
+        "minimum_futures_confirmations": 1,
+        "minimum_option_confirmations": 1,
+        "maximum_age_seconds": 5,
+        "minimum_confidence": 0.30,
+        "gate_minimum_directional_confirmations": 1,
+        "gate_minimum_independent_families": 2,
+        "event_driven_entry": true,
+        "candidate_ttl_seconds": 30,
+        "minimum_candidate_premium_chase_percent": 0.0,
+        "maximum_candidate_premium_chase_percent": 1.5,
+        "require_directional_option_book": true,
+        "event_entry_cutoff_time": "15:10:00"
+      },
+      "execution": {
+        "stop_percent": 5.0,
+        "target_percent": 10.0,
+        "maximum_hold_minutes": 15,
+        "cooldown_seconds": 300,
+        "trailing_activation_percent": 5.0,
+        "trailing_drawdown_percent": 3.0,
+        "no_follow_through_seconds": 120,
+        "minimum_follow_through_percent": 0.50,
+        "event_driven_exit": true,
+        "close_at_tape_end": true
+      }
+    }
+  }
+}

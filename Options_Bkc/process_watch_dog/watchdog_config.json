@@ -1,0 +1,153 @@
+{
+  "version": 2,
+  "project_root": "..",
+  "strategy_config": "../config/strategy_config.json",
+  "runtime_directory": "runtime",
+  "log_directory": "logs",
+  "poll_interval_seconds": 0.5,
+  "console_status_interval_seconds": 2,
+  "console_show_child_output": false,
+  "log_max_bytes": 5000000,
+  "log_backup_count": 5,
+  "control": {
+    "host": "127.0.0.1",
+    "port": 47651
+  },
+  "restart_defaults": {
+    "restart_on_failure": true,
+    "restart_on_clean_exit": false,
+    "delay_seconds": 3,
+    "maximum_delay_seconds": 60,
+    "maximum_restarts": 5,
+    "restart_window_seconds": 120,
+    "stable_run_seconds": 300,
+    "graceful_shutdown_seconds": 10
+  },
+  "run_process": [
+    {
+      "id": "local_nats_server",
+      "enabled": true,
+      "singleton": true,
+      "role": "NATS_SERVER",
+      "command": [
+        "{project_root}\\.runtime\\nats-server-v2.14.3\\nats-server-v2.14.3-windows-amd64\\nats-server.exe",
+        "-a",
+        "127.0.0.1",
+        "-p",
+        "4222",
+        "-n",
+        "ktrader-local"
+      ],
+      "working_directory": "{project_root}",
+      "restart": {
+        "restart_on_clean_exit": true
+      },
+      "fatal_output_patterns": [
+        "address already in use",
+        "error listening"
+      ],
+      "startup_grace_seconds": 2,
+      "output_idle_timeout_seconds": null,
+      "log_file": "local_nats_server.log"
+    },
+    {
+      "id": "mkt_data_feed_handler",
+      "enabled": true,
+      "singleton": true,
+      "role": "MKT_DATA_FEED_HANDLER",
+      "command": [
+        "{project_root}\\myenv\\Scripts\\python.exe",
+        "-u",
+        "{project_root}\\scripts\\run_market_data_feed_handler.py",
+        "--heartbeat-file",
+        "{project_root}\\process_watch_dog\\runtime\\mkt_data_feed_handler.heartbeat"
+      ],
+      "working_directory": "{project_root}",
+      "environment": {
+        "PYTHONUNBUFFERED": "1",
+        "WATCHDOG_PROCESS_ID": "{process_id}"
+      },
+      "fatal_output_patterns": [
+        "Angle One WebSocket failed",
+        "WebSocket (?:did not open|failed to open)",
+        "broker.*(?:disconnect|connection.*lost)",
+        "session.*(?:expired|invalid)",
+        "MKT_DATA_FEED_HANDLER_FATAL",
+        "Traceback"
+      ],
+      "startup_grace_seconds": 30,
+      "heartbeat_file": "{project_root}\\process_watch_dog\\runtime\\mkt_data_feed_handler.heartbeat",
+      "heartbeat_timeout_seconds": 15,
+      "output_idle_timeout_seconds": null,
+      "log_file": "mkt_data_feed_handler.log"
+    },
+    {
+      "id": "central_signal_router",
+      "enabled": true,
+      "singleton": true,
+      "role": "CENTRAL_SIGNAL_ROUTER",
+      "command": [
+        "{project_root}\\myenv\\Scripts\\python.exe",
+        "-u",
+        "{project_root}\\scripts\\run_signal_router.py",
+        "--strategy-config",
+        "{strategy_config}"
+      ],
+      "working_directory": "{project_root}",
+      "environment": {
+        "PYTHONUNBUFFERED": "1",
+        "WATCHDOG_PROCESS_ID": "{process_id}"
+      },
+      "fatal_output_patterns": [
+        "address already in use",
+        "central signal router.*failed",
+        "Traceback"
+      ],
+      "startup_grace_seconds": 5,
+      "output_idle_timeout_seconds": null,
+      "log_file": "central_signal_router.log"
+    },
+    {
+      "id": "{profile}__{strategy}__nats_subscriber",
+      "enabled": true,
+      "profiles": "all",
+      "strategies": "enabled",
+      "command": [
+        "{project_root}\\myenv\\Scripts\\python.exe",
+        "-u",
+        "{project_root}\\scripts\\run_worker.py",
+        "--strategy-config",
+        "{strategy_config}",
+        "--strategy-profile",
+        "{profile}",
+        "--strategies",
+        "{strategy}",
+        "--snapshot-interval-ms",
+        "15000",
+        "--market-data-mode",
+        "nats-subscriber",
+        "--heartbeat-file",
+        "{project_root}\\process_watch_dog\\runtime\\{process_id}.heartbeat",
+        "--heartbeat-stall-seconds",
+        "10"
+      ],
+      "working_directory": "{project_root}",
+      "environment": {
+        "PYTHONUNBUFFERED": "1",
+        "WATCHDOG_PROCESS_ID": "{process_id}",
+        "WATCHDOG_PROFILE": "{profile}",
+        "WATCHDOG_STRATEGY": "{strategy}"
+      },
+      "fatal_output_patterns": [
+        "MARKET_DATA_SUBSCRIBER_FATAL",
+        "market data.*(?:disconnect|connection.*lost)",
+        "Traceback"
+      ],
+      "startup_grace_seconds": 30,
+      "heartbeat_file": "{project_root}\\process_watch_dog\\runtime\\{process_id}.heartbeat",
+      "heartbeat_timeout_seconds": 15,
+      "output_idle_timeout_seconds": null,
+      "log_file": "{process_id}.log"
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+"""KTrader simulator tests."""

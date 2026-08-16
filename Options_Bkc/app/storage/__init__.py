@@ -1,0 +1,1 @@
+"""Storage ports and adapters."""

@@ -1,0 +1,159 @@
+opening_context — OFF
+1.1 Balanced flat open
+1.2 Opening drive up
+1.3 Opening drive down
+1.4 Gap fade up
+1.5 Gap fade down
+1.6 Gap-and-go up
+1.7 Gap-and-go down
+1.8 Large-gap absorption
+1.9 Unstable open  
+
+expected_move — OFF
+2.1 09:45 fixed ATM straddle capture
+2.2 Inside first band
+2.3 First expansion
+2.4 Extended move
+2.5 Exhaustion watch
+2.6 Gap-consumption ratio
+2.7 Expected-move buyability
+2.8 Expected-move boundary reversal  
+
+candle_patterns — OFF
+3.1 Doji
+3.2 Dragonfly Doji
+3.3 Gravestone Doji
+3.4 Hammer
+3.5 Shooting Star
+3.6 Closed-candle follow-through
+3.7 Structural-level proximity  
+
+momentum_exhaustion — OFF
+4.1 Afternoon-time validation
+4.2 Expected-move utilization
+4.3 Extended premium return
+4.4 Liquidity distortion
+4.5 IV-crush detection
+4.6 Greek-response failure
+4.7 Directional exhaustion
+4.8 Same-side entry block
+4.9 Tighten-stop/exit advisory  
+
+premium_response — ON
+5.1 Option premium momentum
+5.2 Call-versus-Put relative movement
+5.3 Multi-horizon premium agreement
+5.4 Matching-leg impulse
+5.5 Leg-impulse Z-score
+5.6 Expansion trigger
+5.7 Premium chase validation
+5.8 Delta-Gamma-Vega-Theta expected response
+5.9 Actual-versus-expected transmission ratio  
+
+futures_flow — ON
+6.1 Long buildup
+6.2 Short buildup
+6.3 Short covering
+6.4 Long unwinding
+6.5 Futures-flow strength
+6.6 Same-side alignment
+6.7 Opposing-flow conflict
+6.8 Optional mandatory-flow validation  
+
+consolidated_pcr — ON
+7.1 Consolidated Put OI/Call OI
+7.2 Multi-horizon PCR change
+7.3 Normalized PCR direction
+7.4 PCR directional agreement
+7.5 Macro-PCR positioning evidence
+7.6 Macro/local PCR divergence  
+
+strike_pcr — ON
+8.1 Active-zone Put OI/Call OI
+8.2 Strike-level PCR
+8.3 Multi-horizon PCR change
+8.4 Local PCR agreement
+8.5 Bullish local divergence
+8.6 Bearish local divergence  
+
+volume_oi — ON
+9.1 Call-versus-Put volume flow
+9.2 Option volume-flow direction
+9.3 Call OI migration
+9.4 Put OI migration
+9.5 Premium-confirmed OI migration
+9.6 Boundary OI growth
+9.7 Chain Vol/OI velocity
+9.8 Deep-ITM smart-money confirmation
+9.9 ATM breakout Vol/OI
+9.10 Boundary exhaustion Vol/OI  
+
+iv_surface — ON
+   10.1 Morning ATM-IV baseline
+   10.2 Vega-trap detection
+   10.3 Intraday IV rank
+   10.4 IV expansion
+   10.5 IV-cost validation
+   10.6 IV buyability score
+   10.7 Unstable-high-volatility regime  
+
+iv_skew — ON
+   11.1 Relative Call-versus-Put IV movement
+   11.2 Multi-horizon IV-skew direction
+   11.3 Resistance Call-IV spike
+   11.4 Support Put-IV spike
+   11.5 BUY_CALL skew confirmation
+   11.6 BUY_PUT skew confirmation
+   11.7 Opposing-skew conflict  
+
+atr_normalization — ON
+   12.1 Normalized index momentum
+   12.2 Intraday movement scale
+   12.3 Multi-horizon index direction
+   12.4 Compression-range normalization
+   12.5 Forecast-move scaling  
+
+india_vix_regime — ON
+   13.1 India-VIX availability
+   13.2 Option-buying volatility regime
+   13.3 VIX buyability score
+   13.4 Excessive-volatility penalty  
+
+gamma_concentration — ON
+   14.1 Coiled-spring detection
+   14.2 OTM Call-IV expansion
+   14.3 OTM Put-IV expansion
+   14.4 OTM premium impulse
+   14.5 Gamma BUY_CALL blast
+   14.6 Gamma BUY_PUT blast
+   14.7 Quant gamma-side match
+   14.8 Gamma expansion trigger
+   14.9 Gamma buyability contribution
+   14.10 GAMMA_EXPANSION candidate  
+
+straddle_expansion — ON
+   15.1 ATM CE+PE straddle calculation
+   15.2 Straddle percentage change
+   15.3 Minimum 0.35% expansion validation
+   15.4 Convexity-expansion trigger
+   15.5 Straddle buyability contribution  
+
+futures_basis — ON
+   16.1 Futures-minus-spot basis
+   16.2 Basis change
+   16.3 Normalized basis direction
+   16.4 BUY_CALL basis alignment
+   16.5 BUY_PUT basis alignment
+   16.6 Opposing-basis conflict  
+
+order_book_imbalance — ON
+   17.1 Weighted bid/ask depth imbalance
+   17.2 Option premium velocity
+   17.3 Futures price velocity
+   17.4 Minimum event persistence
+   17.5 Maximum spread validation
+   17.6 Signal freshness validation
+   17.7 Microstructure confidence
+   17.8 Target-option confirmations
+   17.9 Optional futures-book confirmations
+   17.10 Opposing microstructure veto
