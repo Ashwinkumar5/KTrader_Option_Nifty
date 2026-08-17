@@ -198,13 +198,27 @@ class DerivativesQuantStrategy:
         else:
             matching_leg_impulse = Decimal("0")
             matching_leg_impulse_z = Decimal("0")
-        expansion_triggered = (
+        momentum_expansion_triggered = (
             gamma_matches
             or matching_leg_impulse_z
             >= self._settings.minimum_leg_impulse_zscore
             or straddle_expansion
             >= self._settings.minimum_straddle_expansion_percent
-            or iv_expansion >= self._settings.minimum_iv_expansion_percent
+        )
+        iv_expansion_triggered = (
+            iv_expansion >= self._settings.minimum_iv_expansion_percent
+        )
+        # A pure IV expansion signals that premium is getting more expensive
+        # without confirming that the underlying or its options are already
+        # moving. Requiring a momentum-based trigger (gamma alignment, leg
+        # impulse, or straddle expansion) avoids buying long premium into an
+        # IV spike that later reverses as vega unwinds.
+        expansion_triggered = (
+            momentum_expansion_triggered
+            or (
+                not self._settings.require_momentum_expansion_trigger
+                and iv_expansion_triggered
+            )
         )
 
         leg_now = (
@@ -892,7 +906,7 @@ class DerivativesQuantStrategy:
         dict[int, Decimal],
         _OptionPositioning,
     ]:
-        weights = self._settings.weights
+        weights = self._normalized_weights()
         current = history[-1]
         prior_history = tuple(history)[:-1]
         typical_seconds = _typical_step_seconds(history)
@@ -1142,6 +1156,34 @@ class DerivativesQuantStrategy:
                 self._feature_enabled(item) for item in feature_name
             )
         return self._feature_enabled(feature_name)
+
+    def _normalized_weights(self) -> dict[str, Decimal]:
+        """Renormalize enabled weights so the direction score sums to one.
+
+        Configured weights express relative feature importance and can sum to
+        less than one (for example 0.96 for the active profile). Without this
+        normalization the clamped score never reaches its full range, which
+        biases the quantile activation threshold and makes the score an
+        inconsistent probability-like measure across profiles. Only weights of
+        enabled inputs are included so single-feature research controls keep an
+        effective weight of exactly one.
+        """
+
+        enabled_total = sum(
+            self._settings.weights.get(name, Decimal("0"))
+            for name in self._DIRECTION_FEATURES
+            if self._direction_input_enabled(name)
+        )
+        if enabled_total <= 0:
+            return dict(self._settings.weights)
+        return {
+            name: (
+                value / enabled_total
+                if value > 0
+                else Decimal("0")
+            ).quantize(Decimal("0.000001"))
+            for name, value in self._settings.weights.items()
+        }
 
     def _feature_enabled(self, name: str) -> bool:
         return (

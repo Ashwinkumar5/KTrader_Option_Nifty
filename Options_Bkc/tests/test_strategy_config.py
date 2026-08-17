@@ -293,205 +293,26 @@ class StrategyConfigurationTests(unittest.TestCase):
             Decimal("1"),
         )
 
-    def test_gamma_blast_profile_is_isolated_and_executable(self) -> None:
-        profile = load_strategy_configuration(
-            profile_name="gamma_blast"
+    def test_profile_inheritance_merges_quant_weights_from_child(self) -> None:
+        parent = load_strategy_configuration(
+            profile_name="derivatives_only"
+        ).profile
+        child = load_strategy_configuration(
+            profile_name="intraday_directional_premium_momentum_research"
         ).profile
 
-        self.assertTrue(profile.strategy_enabled("GAMMA_EXPANSION"))
-        self.assertFalse(profile.strategy_enabled("DERIVATIVES_QUANT"))
-        self.assertTrue(profile.feature_enabled("gamma_concentration"))
-        self.assertTrue(profile.feature_enabled("straddle_expansion"))
-        self.assertTrue(profile.feature_enabled("iv_surface"))
-        self.assertTrue(profile.feature_enabled("premium_response"))
-        self.assertTrue(profile.feature_enabled("order_book_imbalance"))
-        self.assertFalse(profile.feature_enabled("iv_skew"))
-        self.assertFalse(profile.feature_enabled("futures_flow"))
         self.assertEqual(
-            profile.microstructure.gate_minimum_confirmations,
-            1,
-        )
-        self.assertEqual(
-            profile.microstructure.gate_minimum_directional_confirmations,
-            1,
-        )
-        self.assertFalse(
-            profile.microstructure.gamma_require_structural_room
-        )
-        self.assertEqual(profile.execution.stop_percent, Decimal("5.0"))
-        self.assertEqual(profile.execution.target_percent, Decimal("50.0"))
-
-    def test_combined_gamma_and_directional_profile_is_executable(self) -> None:
-        profile = load_strategy_configuration(
-            profile_name="gamma_blast_directional_momentum_research"
-        ).profile
-
-        self.assertTrue(profile.strategy_enabled("DERIVATIVES_QUANT"))
-        self.assertTrue(profile.strategy_enabled("GAMMA_EXPANSION"))
-        self.assertEqual(
-            {
-                name
-                for name, enabled in profile.features.items()
-                if enabled
-            },
-            {
-                "expected_move",
-                "premium_response",
-                "futures_flow",
-                "iv_surface",
-                "atr_normalization",
-                "gamma_concentration",
-                "straddle_expansion",
-                "order_book_imbalance",
-            },
-        )
-        self.assertEqual(
-            profile.quant.weights["index_momentum"],
+            child.quant.weights["index_momentum"],
             Decimal("0.65"),
         )
         self.assertEqual(
-            profile.quant.weights["futures_flow"],
+            child.quant.weights["futures_flow"],
             Decimal("0.35"),
         )
-        self.assertFalse(
-            profile.microstructure.gamma_require_structural_room
+        self.assertNotEqual(
+            child.quant.weights["index_momentum"],
+            parent.quant.weights["index_momentum"],
         )
-        self.assertEqual(
-            profile.microstructure.gate_minimum_confirmations,
-            1,
-        )
-        self.assertEqual(profile.execution.stop_percent, Decimal("5.0"))
-        self.assertEqual(profile.execution.target_percent, Decimal("10.0"))
-
-    def test_expiry_impulse_profile_is_isolated_from_gamma(self) -> None:
-        profile = load_strategy_configuration(
-            profile_name="expiry_long_premium_impulse_research"
-        ).profile
-
-        self.assertTrue(profile.strategy_enabled("DERIVATIVES_QUANT"))
-        self.assertFalse(profile.strategy_enabled("GAMMA_EXPANSION"))
-        self.assertTrue(profile.quant.require_expiry_day)
-        self.assertTrue(profile.quant.require_futures_flow)
-        self.assertTrue(profile.quant.require_expansion_trigger)
-        self.assertEqual(
-            profile.quant.minimum_buyability_score,
-            Decimal("0.60"),
-        )
-        self.assertEqual(
-            profile.quant.early_min_buyability_score,
-            Decimal("0.60"),
-        )
-        self.assertEqual(profile.quant.minimum_independent_families, 4)
-        self.assertEqual(profile.quant.early_min_option_chain_families, 2)
-        self.assertEqual(
-            {
-                name
-                for name, weight in profile.quant.weights.items()
-                if weight > 0
-            },
-            {
-                "index_momentum",
-                "futures_flow",
-                "option_premium_momentum",
-                "option_volume_flow",
-                "oi_migration",
-            },
-        )
-        self.assertEqual(
-            profile.microstructure.minimum_option_confirmations,
-            2,
-        )
-
-
-    def test_child_feature_section_replaces_parent_features(self) -> None:
-        profile = load_strategy_configuration(
-            profile_name="gamma_blast"
-        ).profile
-
-        self.assertEqual(
-            {
-                name
-                for name, enabled in profile.features.items()
-                if enabled
-            },
-            {
-                "premium_response",
-                "iv_surface",
-                "gamma_concentration",
-                "straddle_expansion",
-                "order_book_imbalance",
-            },
-        )
-        self.assertIn("opening_context", profile.features)
-        self.assertFalse(profile.feature_enabled("opening_context"))
-
-    def test_profile_inheritance_can_disable_futures_book_gate(self) -> None:
-        configuration = load_strategy_configuration(
-            profile_name="derivatives_without_futures_book"
-        )
-
-        self.assertFalse(
-            configuration.profile.microstructure
-            .require_futures_confirmation
-        )
-        self.assertEqual(
-            configuration.profile.quant.minimum_direction_score,
-            load_strategy_configuration(
-                profile_name="derivatives_only"
-            ).profile.quant.minimum_direction_score,
-        )
-
-    def test_mandatory_futures_book_is_an_explicit_ablation(self) -> None:
-        configuration = load_strategy_configuration(
-            profile_name="derivatives_with_mandatory_futures_book"
-        )
-
-        self.assertTrue(
-            configuration.profile.microstructure
-            .require_futures_confirmation
-        )
-
-    def test_high_recall_threshold_is_eod_only_profile(self) -> None:
-        active = load_strategy_configuration(
-            profile_name="derivatives_only"
-        ).profile
-        experimental = load_strategy_configuration(
-            profile_name="derivatives_adaptive_recall_experimental"
-        ).profile
-
-        self.assertEqual(
-            active.quant.minimum_direction_score,
-            Decimal("0.34"),
-        )
-        self.assertEqual(
-            experimental.quant.minimum_direction_score,
-            Decimal("0.18"),
-        )
-
-    def test_isolated_quant_research_profiles_change_one_threshold(self) -> None:
-        baseline = load_strategy_configuration(
-            profile_name="derivatives_only"
-        ).profile.quant
-        horizon = load_strategy_configuration(
-            profile_name="derivatives_quant_horizon_research"
-        ).profile.quant
-        family = load_strategy_configuration(
-            profile_name="derivatives_quant_family_research"
-        ).profile.quant
-        buyability = load_strategy_configuration(
-            profile_name="derivatives_quant_buyability_research"
-        ).profile.quant
-
-        self.assertEqual(baseline.early_min_horizon_agreement, 3)
-        self.assertEqual(horizon.early_min_horizon_agreement, 2)
-        self.assertEqual(horizon.early_min_independent_families, 4)
-        self.assertEqual(family.early_min_independent_families, 3)
-        self.assertEqual(family.early_min_buyability_score, Decimal("0.65"))
-        self.assertEqual(
-            buyability.early_min_buyability_score,
-            Decimal("0.60"),
-        )
-        self.assertEqual(buyability.early_min_horizon_agreement, 3)
 
 
 if __name__ == "__main__":

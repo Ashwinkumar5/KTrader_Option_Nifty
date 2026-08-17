@@ -140,6 +140,7 @@ class DerivativesQuantSettings:
     minimum_compression_observations: int = 5
     require_compression: bool = False
     require_expansion_trigger: bool = True
+    require_momentum_expansion_trigger: bool = True
     require_futures_flow: bool = False
     require_expiry_day: bool = False
     weights: dict[str, Decimal] = field(
@@ -1061,6 +1062,9 @@ def _parse_profile(name: str, data: dict[str, object]) -> StrategyProfile:
         ),
         require_expansion_trigger=_boolean(
             raw_quant.get("require_expansion_trigger"), True
+        ),
+        require_momentum_expansion_trigger=_boolean(
+            raw_quant.get("require_momentum_expansion_trigger"), True
         ),
         require_futures_flow=_boolean(
             raw_quant.get("require_futures_flow"), False

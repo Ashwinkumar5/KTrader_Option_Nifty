@@ -682,5 +682,74 @@ class DerivativesQuantStrategyTests(unittest.TestCase):
         self.assertIn("activation=EARLY_QUANT_FLOW", candidates[0].reason)
 
 
+    def test_enabled_weights_are_normalized_to_sum_one(self) -> None:
+        strategy = DerivativesQuantStrategy(DerivativesQuantSettings())
+        normalized = strategy._normalized_weights()
+        self.assertAlmostEqual(float(sum(normalized.values())), 1.0, places=6)
+
+    def test_pure_iv_expansion_is_not_a_sufficient_convexity_trigger_when_momentum_required(
+        self,
+    ) -> None:
+        at = datetime(2026, 7, 28, 4, 30, tzinfo=UTC)
+
+        def convexity(settings: DerivativesQuantSettings) -> bool:
+            strategy = DerivativesQuantStrategy(settings)
+            strategy.evaluate(
+                replace(
+                    _context(at),
+                    gamma_signal=None,
+                    atm_call_iv=Decimal("20"),
+                    atm_put_iv=Decimal("20"),
+                )
+            )
+            strategy.evaluate(
+                replace(
+                    _context(at + timedelta(seconds=15)),
+                    gamma_signal=None,
+                    atm_call_iv=Decimal("21.5"),
+                    atm_put_iv=Decimal("21.5"),
+                )
+            )
+            return next(
+                item.passed
+                for item in strategy.last_diagnostic.checks
+                if item.code == "convexity_expansion"
+            )
+
+        guarded = DerivativesQuantSettings()
+        self.assertFalse(convexity(guarded))
+        unguarded = replace(
+            DerivativesQuantSettings(),
+            require_momentum_expansion_trigger=False,
+        )
+        self.assertTrue(convexity(unguarded))
+
+    def test_gamma_alignment_satisfies_momentum_convexity_trigger(self) -> None:
+        strategy = DerivativesQuantStrategy(DerivativesQuantSettings())
+        at = datetime(2026, 7, 28, 4, 30, tzinfo=UTC)
+        strategy.evaluate(
+            replace(
+                _context(at),
+                gamma_signal="BUY_CALL",
+                atm_call_iv=Decimal("20"),
+                atm_put_iv=Decimal("20"),
+            )
+        )
+        strategy.evaluate(
+            replace(
+                _context(at + timedelta(seconds=15)),
+                gamma_signal="BUY_CALL",
+                atm_call_iv=Decimal("21.5"),
+                atm_put_iv=Decimal("21.5"),
+            )
+        )
+        convexity = next(
+            item
+            for item in strategy.last_diagnostic.checks
+            if item.code == "convexity_expansion"
+        )
+        self.assertTrue(convexity.passed)
+
+
 if __name__ == "__main__":
     unittest.main()

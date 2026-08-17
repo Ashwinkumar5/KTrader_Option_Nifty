@@ -86,6 +86,8 @@ class ReplayResult:
     average_maximum_favorable_excursion_percent: Decimal
     average_maximum_adverse_excursion_percent: Decimal
     feature_coverage: dict[str, dict[str, Decimal | int]]
+    unique_session_days: int
+    sufficient_evidence: bool
 
 
 async def run_replay(
@@ -535,6 +537,7 @@ async def run_replay(
     net_completed_trade_return_percent = Decimal("0")
     estimated_transaction_cost = Decimal("0")
     coverage_counts: Counter[str] = Counter()
+    unique_session_dates: set = set()
     index_path = (
         event_index_path.resolve()
         if event_index_path is not None
@@ -556,6 +559,7 @@ async def run_replay(
                     continue
                 counters["market_events_decoded"] += 1
                 latest_replay_at = tick.received_at
+                unique_session_dates.add(latest_replay_at.date())
                 state.update_tick(tick)
                 tick_exit_fills = (
                     paper_execution.mark_tick(tick)
@@ -813,6 +817,7 @@ async def run_replay(
                 each_side=settings.option_window_each_side,
             )
             latest_replay_at = populated_snapshot.captured_at
+            unique_session_dates.add(latest_replay_at.date())
             exit_fills = paper_execution.mark(populated_snapshot)
             _update_strong_signal_exits(
                 exit_fills,
@@ -1231,6 +1236,10 @@ async def run_replay(
         feature_coverage=_coverage_summary(
             coverage_counts,
             counters["frames_processed"],
+        ),
+        unique_session_days=len(unique_session_dates),
+        sufficient_evidence=(
+            len(unique_session_dates) >= 8 and completed_trades >= 30
         ),
     )
     _write_json(run_directory / "summary.json", asdict(result))
@@ -1733,6 +1742,11 @@ def _format_summary(result: ReplayResult, audit: SessionAudit) -> str:
             f"{result.average_maximum_adverse_excursion_percent}%"
         ),
         f"Feature coverage: {result.feature_coverage}",
+        f"Unique session days: {result.unique_session_days}",
+        (
+            "Evidence threshold (>= 8 days and >= 30 trades): "
+            + ("MET" if result.sufficient_evidence else "NOT MET")
+        ),
         f"Rejection counts: {result.rejection_counts or 'none'}",
     ]
     lines.extend(_format_strong_signal_summary(result))
@@ -1792,6 +1806,11 @@ def _write_regression_report(
         (
             "Average maximum adverse excursion: "
             f"{result.average_maximum_adverse_excursion_percent}%"
+        ),
+        f"Unique session days: {result.unique_session_days}",
+        (
+            "Evidence threshold (>= 8 days and >= 30 trades): "
+            + ("MET" if result.sufficient_evidence else "NOT MET")
         ),
         f"Source timestamp regressions: {audit.timestamp_regressions}",
         (

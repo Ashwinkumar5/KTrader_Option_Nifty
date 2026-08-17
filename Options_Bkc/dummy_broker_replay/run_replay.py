@@ -72,8 +72,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--round-trip-cost-percent",
-        default="0.20",
-        help="Estimated all-in round-trip transaction cost percent (default: 0.20)",
+        default="1.50",
+        help=(
+            "Estimated all-in round-trip transaction cost percent "
+            "(default: 1.50). NIFTY ATM option bid/ask spreads typically cost "
+            "0.5-2.0% each way, so 0.20% materially overstates paper P&L."
+        ),
     )
     parser.add_argument(
         "--compact-output",

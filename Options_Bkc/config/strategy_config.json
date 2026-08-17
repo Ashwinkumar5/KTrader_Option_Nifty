@@ -73,6 +73,7 @@
         "minimum_compression_observations": 5,
         "require_compression": false,
         "require_expansion_trigger": true,
+        "require_momentum_expansion_trigger": true,
         "require_futures_flow": false,
         "weights": {
           "futures_flow": 0.22,
