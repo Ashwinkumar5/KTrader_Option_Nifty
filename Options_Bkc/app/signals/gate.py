@@ -1243,6 +1243,8 @@ def _regime_setup_error(
 ) -> str | None:
     if regime == MarketRegime.UNSTABLE_HIGH_VOL:
         return "unstable/high-volatility regime is no-trade"
+    if regime == MarketRegime.UNKNOWN:
+        return "market regime is unclassified"
     if setup in {
         SignalSetup.DERIVATIVES_QUANT,
         SignalSetup.OPTION_CHAIN_IMPULSE,

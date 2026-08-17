@@ -3,22 +3,22 @@ from __future__ import annotations
 import unittest
 from pathlib import Path
 
-from app.backtesting.microstructure_replay import summarize
+from dummy_broker_replay.reader import RecordedSessionReader
 
 
 class MicrostructureReplayTests(unittest.TestCase):
-    def test_summarizes_market_events_and_shadow_qualified_decisions(self) -> None:
+    def test_audits_recorded_session_summary(self) -> None:
         path = (
             Path(__file__).resolve().parent
             / "fixtures"
-            / "microstructure_summary.jsonl"
+            / "broker_replay_tape_v4.jsonl"
         )
-        summary, qualified = summarize(path)
+        audit = RecordedSessionReader(path).audit()
 
-        self.assertEqual(summary.market_events, 2)
-        self.assertEqual(summary.complete_books, 1)
-        self.assertEqual(summary.microstructure_candidates, 1)
-        self.assertEqual(summary.candidates_by_side, {"BUY_CALL": 1})
-        self.assertEqual(summary.gate_decisions, 2)
-        self.assertEqual(summary.shadow_qualified, 1)
-        self.assertEqual(len(qualified), 1)
+        self.assertEqual(audit.market_events, 3)
+        self.assertEqual(audit.gate_frames, 1)
+        self.assertEqual(audit.source_qualified, 0)
+        self.assertEqual(audit.timestamp_regressions, 0)
+        self.assertEqual(audit.excluded_contaminated_contracts, 0)
+        self.assertEqual(len(audit.unique_contracts), 2)
+        self.assertEqual(audit.underlyings, ("NIFTY",))

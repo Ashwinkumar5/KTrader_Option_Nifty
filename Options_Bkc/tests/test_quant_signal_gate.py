@@ -12,6 +12,7 @@ from app.domain.models import (
     GreeksSnapshot,
     InstrumentKind,
     InstrumentToken,
+    MarketRegime,
     MicrostructureSignal,
     OptionChainSnapshot,
     OptionContract,
@@ -308,6 +309,7 @@ class QuantSignalGateTests(unittest.TestCase):
             target_option_type=OptionType.CALL,
             setup_type=SignalSetup.DERIVATIVES_QUANT,
             selected_strategy=StrategyFamily.DERIVATIVES_QUANT,
+            market_regime=MarketRegime.TREND_BREAKOUT,
         )
         gate = SignalGate(
             SignalGateSettings(
@@ -348,6 +350,79 @@ class QuantSignalGateTests(unittest.TestCase):
 
         self.assertTrue(qualified.qualified)
         self.assertEqual(qualified.confirmation_count, 4)
+
+
+    def test_unknown_market_regime_is_rejected_when_regime_match_required(
+        self,
+    ) -> None:
+        at = datetime(2026, 7, 28, 4, 30, tzinfo=UTC)
+        option_token = InstrumentToken(
+            Exchange.NFO,
+            "CE1",
+            "NIFTY",
+            "NIFTY30JUL2625000CE",
+            InstrumentKind.OPTION,
+        )
+        contract = OptionContract(
+            underlying="NIFTY",
+            expiry=date(2026, 7, 30),
+            strike=Decimal("25000"),
+            option_type=OptionType.CALL,
+            token=option_token,
+            lot_size=75,
+        )
+        quote = OptionQuote(
+            contract=contract,
+            ltp=Decimal("100"),
+            oi=10000,
+            volume=20000,
+            bid=Decimal("99.5"),
+            ask=Decimal("100"),
+            greeks=GreeksSnapshot(
+                contract=contract,
+                captured_at=at,
+                implied_volatility=Decimal("15"),
+                delta=Decimal("0.5"),
+            ),
+        )
+        snapshot = OptionChainSnapshot(
+            underlying="NIFTY",
+            expiry=contract.expiry,
+            spot_price=Decimal("25000"),
+            atm_strike=Decimal("25000"),
+            captured_at=at,
+            quotes=(quote,),
+        )
+        analytics = AnalyticsSnapshot(
+            underlying="NIFTY",
+            captured_at=at,
+            atm_strike=Decimal("25000"),
+            signal="BUY_CALL",
+            signal_reason="DERIVATIVES QUANT aligned",
+            target_strike=Decimal("25000"),
+            target_option_type=OptionType.CALL,
+            setup_type=SignalSetup.DERIVATIVES_QUANT,
+            selected_strategy=StrategyFamily.DERIVATIVES_QUANT,
+            market_regime=MarketRegime.UNKNOWN,
+        )
+        gate = SignalGate(
+            SignalGateSettings(
+                min_confirmations=1,
+                cooldown_seconds=60,
+                max_level_distance=Decimal("10"),
+                max_microstructure_age_seconds=5,
+                mode="shadow",
+                require_regime_match=True,
+            )
+        )
+        _gated, decision = gate.evaluate(
+            snapshot=snapshot,
+            analytics=analytics,
+            microstructure_signal=None,
+        )
+
+        self.assertFalse(decision.qualified)
+        self.assertIn("regime", decision.reason.lower())
 
 
 if __name__ == "__main__":
